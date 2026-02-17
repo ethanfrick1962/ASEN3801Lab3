@@ -9,7 +9,7 @@ datafolder = [pwd, '/data'];
 datapattern = fullfile(datafolder, '*');
 datafiles = dir(datapattern);
 datafiles = datafiles(~ismember({datafiles.name},{'.','..'}));
-data = struct();
+cleandata = struct();
 
 % Iterate through all tables
 for i = 1:length(datafiles)
@@ -21,11 +21,11 @@ for i = 1:length(datafiles)
     name = erase(datafiles(i).name, '2026_02_10_002_');
 
     % Add table to data struct
-    data.(['Data_' name]) = T;
+    cleandata.(['case_' name]) = T;
 end
 
 % Clean all other data
 clear datafolder datapattern datafiles i name T ans;
 
 % Save as MATLAB workspace
-save('CleanData.mat');
+save('cleandata.mat');
