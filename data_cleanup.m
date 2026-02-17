@@ -18,10 +18,10 @@ for i = 1:length(datafiles)
     rmmissing(T);
 
     % Name file
-    name = erase(datafiles(i).name, '2026_02_10_002_');
+    name = datafiles(i).name;
 
     % Add table to data struct
-    cleandata.(['case_' name]) = T;
+    cleandata.(name) = T;
 end
 
 % Clean all other data
