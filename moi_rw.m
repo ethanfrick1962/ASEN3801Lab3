@@ -35,8 +35,11 @@ plot(time, torque_avgvec, 'blue--', 'LineWidth', 1.5);
 % Metadata
 xlabel('Time (s)');
 ylabel('Torque (mN * m)');
-title('Real vs Commanded Torque');
+title('Real vs commanded torque (reaction wheel)');
 legend('Real Torque', 'Commanded Torque');
+
+% Save figure
+print(gcf, 'figs/rw_torque', '-dpng', '-r300');
 
 %% Calculate and Plot Angular Velocity
 
@@ -47,19 +50,59 @@ time_start = time(1);
 time_end = time(end);
 alpha = abs((omega_end - omega_start) / (time_end - time_start));
 
+% Angular acceleration fit
+alphafit = polyfit(time, omega, 1);
+alphaval = polyval(alphafit, time);
+
 % Plotting angular velocity vs time
 figure();
 hold on;
 grid on;
-plot(time, omega);
+plot(time, omega, 'b--');
+plot(time, alphaval, 'r--');
 
 % Metadata
 xlabel('Time (s)');
-ylabel('Angular Velocity (\omega)');
-title('Angular velocity versus time');
+ylabel('Angular velocity (\omega)');
+title('Angular velocity versus time (reaction wheel)');
+legend('Real data', 'Linear fit');
+
+% Save figure
+print(gcf, 'figs/rw_omega', '-dpng', '-r300');
 
 %% Calculate Moment of Inertia
 
 % Assuming a constant torque over the time interval
 moi = torque_average / alpha;  % [g*m^2]
 disp(['Moment of Inertia: ', num2str(moi), ' g*m^2']);
+
+%% Calculate MoI Statistics
+
+% Alpha data
+alphafit4 = polyfit(time, (cleandata.case_RW4(125:510, 3) * ((2 * pi) / 60)), 1);
+alphafit8 = polyfit(time, (cleandata.case_RW8(125:510, 3) * ((2 * pi) / 60)), 1);
+alphafit10 = polyfit(time, (cleandata.case_RW10(125:510, 3) * ((2 * pi) / 60)), 1);
+alphafit15 = polyfit(time, (cleandata.case_RW15(125:510, 3) * ((2 * pi) / 60)), 1);
+alphafit20 = polyfit(time, (cleandata.case_RW20(125:510, 3) * ((2 * pi) / 60)), 1);
+
+alphaval4 = alphafit4(1);
+alphaval8 = alphafit8(1);
+alphaval10 = alphafit10(1);
+alphaval15 = alphafit15(1);
+alphaval20 = alphafit20(1);
+
+alphas = [alphaval4, alphaval8, alphaval10, alphaval15, alphaval20];
+
+% Torque data
+torqueval4 = mean(tau .* cleandata.case_RW4(125:510, 4));
+torqueval8 = mean(tau .* cleandata.case_RW8(125:510, 4));
+torqueval10 = mean(tau .* cleandata.case_RW10(125:510, 4));
+torqueval15 = mean(tau .* cleandata.case_RW15(125:510, 4));
+torqueval20 = mean(tau .* cleandata.case_RW20(125:510, 4));
+
+torques = [torqueval4, torqueval8, torqueval10, torqueval15, torqueval20];
+
+% Compute moment of inertia vector
+moi_vector = torques ./ alphas;
+moi_mean = mean(moi_vector);
+moi_std = std(moi_vector);

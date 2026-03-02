@@ -35,8 +35,11 @@ plot(time, torque_avgvec, 'blue--', 'LineWidth', 1.5);
 % Metadata
 xlabel('Time (s)');
 ylabel('Torque (mN * m)');
-title('Real vs Commanded Torque');
+title('Real vs commanded torque (base)');
 legend('Real Torque', 'Commanded Torque');
+
+% Save figure
+print(gcf, 'figs/base_torque', '-dpng', '-r300');
 
 %% Calculate and Plot Angular Velocity
 
@@ -47,17 +50,25 @@ time_start = time(1);
 time_end = time(end);
 alpha = abs((omega_end - omega_start) / (time_end - time_start));
 
+% Angular acceleration fit
+alphafit = polyfit(time, omega, 1);
+alphaval = polyval(alphafit, time);
+
 % Plotting angular velocity vs time
 figure();
 hold on;
 grid on;
-plot(time, omega);
+plot(time, omega, 'b-');
+plot(time, alphaval, 'r--');
 
 % Metadata
 xlabel('Time (s)');
-ylabel('Angular Velocity (\omega)');
-title('Real vs Commanded Torque');
-legend('Real Torque', 'Commanded Torque');
+ylabel('Angular velocity (\omega)');
+title('Angular velocity versus time (base)');
+legend('Real data', 'Linear fit');
+
+% Save figure
+print(gcf, 'figs/base_omega', '-dpng', '-r300');
 
 %% Calculate Moment of Inertia
 
