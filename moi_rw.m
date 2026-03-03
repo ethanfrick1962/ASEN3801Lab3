@@ -8,12 +8,12 @@ clear; clc; close all;
 load('cleandata.mat');
 
 % Torque constant
-tau = 33.5;                                                     % [mN * m / A]
+tau = 33.5 / 1000;                                              % [N * m / A]
 
 % Choosing information from base torque with 10 mN * m
 time = cleandata.case_RW10(125:510, 1) / 1000;                  % [s]
 time = time - time(1);
-torque_commanded = cleandata.case_RW10(125:510, 2);             % [mN * m]
+torque_commanded = (cleandata.case_RW10(125:510, 2)) / 1000;    % [N * m]
 omega = cleandata.case_RW10(125:510, 3) * ((2 * pi) / 60);      % [rad / s]
 current = cleandata.case_RW10(125:510, 4);                      % [A]
 
@@ -34,7 +34,7 @@ plot(time, torque_avgvec, 'blue--', 'LineWidth', 1.5);
 
 % Metadata
 xlabel('Time (s)');
-ylabel('Torque (mN * m)');
+ylabel('Torque (N * m)');
 title('Real vs commanded torque (reaction wheel)');
 legend('Real Torque', 'Commanded Torque');
 
@@ -73,8 +73,8 @@ print(gcf, 'figs/rw_omega', '-dpng', '-r300');
 %% Calculate Moment of Inertia
 
 % Assuming a constant torque over the time interval
-moi = torque_average / alpha;  % [g*m^2]
-disp(['Moment of Inertia: ', num2str(moi), ' g*m^2']);
+moi = torque_average / alpha;  % [kg*m^2]
+disp(['Moment of Inertia: ', num2str(moi), ' kg*m^2']);
 
 %% Calculate MoI Statistics
 
